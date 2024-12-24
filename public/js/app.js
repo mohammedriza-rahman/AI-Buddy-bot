@@ -41,11 +41,11 @@ customDomainContainer.innerHTML = `
     <input type="text" id="customDomain" placeholder="Enter your domain">
 `;
 
-// Insert custom input fields after the respective select elements
+// Insert custom input fields
 domainSelect.parentNode.after(customDomainContainer);
 professionSelect.parentNode.after(customProfessionContainer);
 
-// Create typing indicator element
+// Create typing indicator
 const typingIndicator = document.createElement('div');
 typingIndicator.className = 'message assistant';
 typingIndicator.innerHTML = `
@@ -58,6 +58,30 @@ typingIndicator.innerHTML = `
         <div class="dot"></div>
     </div>
 `;
+
+// Text streaming function
+function streamText(text, textDiv) {
+    return new Promise((resolve) => {
+        const delay = 20; // milliseconds per character
+        let index = 0;
+        textDiv.textContent = '';
+        textDiv.classList.add('streaming');
+        
+        function addNextCharacter() {
+            if (index < text.length) {
+                textDiv.textContent += text[index];
+                index++;
+                messageContainer.scrollTop = messageContainer.scrollHeight;
+                setTimeout(addNextCharacter, delay);
+            } else {
+                textDiv.classList.remove('streaming');
+                resolve();
+            }
+        }
+        
+        addNextCharacter();
+    });
+}
 
 // Toggle Sidebar
 function closeSidebar() {
@@ -123,7 +147,7 @@ function formatText(text) {
     lines.forEach(line => {
         // Handle numbered sections
         if (/^\d+\./.test(line)) {
-            formattedText += `• ${line.replace(/^\d+\.\s*/, '')}\n\n`;
+            formattedText += `• ${line.replace(/^\d+\.\s*/, '')}\n`;
         }
         // Handle bullet points or subheadings
         else if (line.startsWith('*') || line.includes(':')) {
@@ -132,7 +156,7 @@ function formatText(text) {
         }
         // Handle regular text
         else {
-            formattedText += `${line.replace(/\*\*/g, '')}\n\n`;
+            formattedText += `${line.replace(/\*\*/g, '')}\n`;
         }
     });
 
@@ -140,7 +164,7 @@ function formatText(text) {
 }
 
 // Add message to chat
-function addMessage(text, isUser = false) {
+async function addMessage(text, isUser = false) {
     const messageDiv = document.createElement('div');
     messageDiv.className = `message ${isUser ? 'user' : 'assistant'}`;
     
@@ -158,10 +182,17 @@ function addMessage(text, isUser = false) {
     textDiv.className = 'text';
     textDiv.style.whiteSpace = 'pre-wrap';
     textDiv.style.wordBreak = 'break-word';
-    textDiv.textContent = isUser ? text : formatText(text);
     
     messageDiv.appendChild(textDiv);
     messageContainer.appendChild(messageDiv);
+
+    if (isUser) {
+        textDiv.textContent = text;
+    } else {
+        const formattedText = formatText(text);
+        await streamText(formattedText, textDiv);
+    }
+    
     messageContainer.scrollTop = messageContainer.scrollHeight;
 }
 
@@ -172,7 +203,7 @@ async function sendMessage(message, isProfile = false) {
     messageInput.value = '';
     sendBtn.disabled = true;
     
-    addMessage(message, true);
+    await addMessage(message, true);
     messageContainer.appendChild(typingIndicator);
     typingIndicator.querySelector('.typing-indicator').classList.add('visible');
     messageContainer.scrollTop = messageContainer.scrollHeight;
@@ -208,13 +239,13 @@ async function sendMessage(message, isProfile = false) {
         }
         
         const data = await response.json();
-        addMessage(data.message);
+        await addMessage(data.message);
     } catch (error) {
         console.error('Error:', error);
         if (messageContainer.contains(typingIndicator)) {
             messageContainer.removeChild(typingIndicator);
         }
-        addMessage('Sorry, I encountered an error. Please try again.');
+        await addMessage('Sorry, I encountered an error. Please try again.');
     }
 }
 
@@ -256,7 +287,7 @@ submitProfile.addEventListener('click', async (e) => {
     
     try {
         closeSidebar();
-        addMessage(profileMessage, true);
+        await addMessage(profileMessage, true);
         
         messageContainer.appendChild(typingIndicator);
         typingIndicator.querySelector('.typing-indicator').classList.add('visible');
@@ -283,7 +314,7 @@ submitProfile.addEventListener('click', async (e) => {
         }
         
         const data = await response.json();
-        addMessage(data.message);
+        await addMessage(data.message);
         messageInput.focus();
         
         // Reset form
@@ -305,7 +336,7 @@ submitProfile.addEventListener('click', async (e) => {
         if (messageContainer.contains(typingIndicator)) {
             messageContainer.removeChild(typingIndicator);
         }
-        addMessage('Sorry, I encountered an error submitting your profile.');
+        await addMessage('Sorry, I encountered an error submitting your profile.');
     }
 });
 
