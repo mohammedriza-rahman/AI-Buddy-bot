@@ -20,17 +20,15 @@ h1, h2, h3 {
 }
 
 .header {
-    background: linear-gradient(-135deg, #ffffff 0%, #147676 100%);
+    background: linear-gradient(-135deg, #147676 0%, #ffffff 100%);
     color: white;
     padding: 1rem;
     text-align: center;
     position: relative;
 }
 
-
-
 .logo {
-    height: 40px; /* Reduced from 60px */
+    height: 40px;
     margin: 8px 0;
 }
 
@@ -108,9 +106,24 @@ h1, h2, h3 {
     line-height: 1.5;
     white-space: pre-wrap;
     word-break: break-word;
+    min-height: 20px;
+    transition: background-color 0.3s ease;
 }
 
-/* Add spacing between bullet points */
+/* Streaming effect styles */
+@keyframes blink {
+    0%, 100% { opacity: 1; }
+    50% { opacity: 0; }
+}
+
+.text.streaming::after {
+    content: '|';
+    margin-left: 2px;
+    animation: blink 1s infinite;
+    font-weight: 100;
+}
+
+/* Message spacing */
 .message .text p, 
 .message .text li {
     margin-bottom: 10px;
@@ -124,6 +137,8 @@ h1, h2, h3 {
 
 .message.assistant .text {
     margin-left: 4px;
+    background: #f5f5f5;
+    border: 1px solid #eee;
 }
 
 .input-area {
@@ -139,6 +154,7 @@ h1, h2, h3 {
     border: 1px solid #ddd;
     border-radius: 5px;
     font-size: 14px;
+    font-family: 'Open Sans', sans-serif;
 }
 
 .input-area button {
@@ -148,6 +164,7 @@ h1, h2, h3 {
     border: none;
     border-radius: 5px;
     cursor: pointer;
+    font-family: 'Varela Round', sans-serif;
 }
 
 .input-area button:disabled {
@@ -184,6 +201,7 @@ h1, h2, h3 {
     margin-bottom: 6px;
     color: #2c3e50;
     font-weight: 500;
+    font-family: 'Varela Round', sans-serif;
 }
 
 .form-group select,
@@ -193,6 +211,7 @@ h1, h2, h3 {
     border: 1px solid #ddd;
     border-radius: 5px;
     font-size: 14px;
+    font-family: 'Open Sans', sans-serif;
 }
 
 .form-group textarea {
@@ -210,10 +229,11 @@ h1, h2, h3 {
     cursor: pointer;
     font-size: 14px;
     font-weight: 500;
+    font-family: 'Varela Round', sans-serif;
 }
 
 .submit-btn:hover {
-    background: #147676;
+    background: #1a8f8f;
 }
 
 .typing-indicator {
