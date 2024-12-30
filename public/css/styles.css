@@ -20,7 +20,7 @@ h1, h2, h3 {
 }
 
 .header {
-    background: linear-gradient(135deg,#147676 0%, #ffffff 100% )
+    background: linear-gradient(-135deg,#147676 0%, #ffffff 100% )
     color: white;
     padding: 1rem;
     text-align: center;
@@ -130,7 +130,7 @@ h1, h2, h3 {
 }
 
 .message.user .text {
-    background: linear-gradient(135deg,#147676 0%, #ffffff 100% );
+    background: linear-gradient(-135deg,#147676 0%, #ffffff 100% );
     color: white;
     margin-right: 4px;
 }
